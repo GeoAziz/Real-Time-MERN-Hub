@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,11 +27,37 @@ jobs:
           chmod +x "$tmp_dir/argocd"
           sudo install -m 0755 "$tmp_dir/argocd" /usr/local/bin/argocd
 
-      - name: Login to ArgoCD
+      - name: Prepare ArgoCD connection
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
         run: |
+          set -euo pipefail
+          if [[ -z "${ARGOCD_SERVER:-}" ]]; then
+            echo "ARGOCD_SERVER secret is required"
+            exit 1
+          fi
+
+          if [[ -z "${ARGOCD_AUTH_TOKEN:-}" ]]; then
+            echo "ARGOCD_AUTH_TOKEN secret is required"
+            exit 1
+          fi
+
+          normalized_server="${ARGOCD_SERVER#https://}"
+          normalized_server="${normalized_server#http://}"
+          normalized_server="${normalized_server%/}"
+
+          if [[ -z "$normalized_server" ]]; then
+            echo "ARGOCD_SERVER resolved to an empty value"
+            exit 1
+          fi
+
+          echo "ARGOCD_SERVER=$normalized_server" >> "$GITHUB_ENV"
+          echo "ARGOCD_AUTH_TOKEN=$ARGOCD_AUTH_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Login to ArgoCD
+        run: |
+          set -euo pipefail
           argocd login "$ARGOCD_SERVER" --auth-token "$ARGOCD_AUTH_TOKEN" --grpc-web
 
       - name: Sync dev and prod apps
