@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mern-chatapp-vault-bootstrap
+  namespace: vault
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: vault
+      containers:
+        - name: vault-bootstrap
+          image: hashicorp/vault:1.18
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              vault policy write mern-chatapp /vault/policy/policy.hcl
+              vault write auth/kubernetes/role/mern-chatapp \
+                bound_service_account_names=mern-chatapp \
+                bound_service_account_namespaces=mern-chatapp-dev,mern-chatapp-prod \
+                policies=mern-chatapp \
+                ttl=24h
+          envFrom:
+            - secretRef:
+                name: vault-bootstrap
+          volumeMounts:
+            - name: policy
+              mountPath: /vault/policy
+      volumes:
+        - name: policy
+          configMap:
+            name: mern-chatapp-vault-policy

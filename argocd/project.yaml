@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mern-chatapp
+  namespace: argocd
+spec:
+  description: MERN ChatApp deployments
+  sourceRepos:
+    - https://github.com/your-username/Mern_ChatApp.git
+  destinations:
+    - namespace: mern-chatapp-dev
+      server: https://kubernetes.default.svc
+    - namespace: mern-chatapp-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

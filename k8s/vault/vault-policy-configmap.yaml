@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mern-chatapp-vault-policy
+  namespace: vault
+data:
+  policy.hcl: |
+    path "secret/data/mern-chatapp" {
+      capabilities = ["read"]
+    }

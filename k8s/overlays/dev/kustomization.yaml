@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mern-chatapp-dev
+resources:
+  - namespace.yaml
+  - ../../base
+images:
+  - name: ghcr.io/your-username/mern-chatapp
+    newTag: latest
+patches:
+  - target:
+      kind: Deployment
+      name: mern-chatapp
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target:
+      kind: Ingress
+      name: mern-chatapp
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev-chat.example.com
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: dev-chat.example.com
+  - target:
+      kind: ConfigMap
+      name: mern-chatapp-config
+    patch: |-
+      - op: replace
+        path: /data/CLIENT_URL
+        value: https://dev-chat.example.com
+      - op: replace
+        path: /data/SOCKET_CORS_ORIGIN
+        value: https://dev-chat.example.com
+  - target:
+      kind: HorizontalPodAutoscaler
+      name: mern-chatapp
+    patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 1
+      - op: replace
+        path: /spec/maxReplicas
+        value: 3

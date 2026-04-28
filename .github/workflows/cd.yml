@@ -1,0 +1,36 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install argocd CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/argocd
+
+      - name: Login to ArgoCD
+        env:
+          ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+        run: |
+          argocd login "$ARGOCD_SERVER" --auth-token "$ARGOCD_AUTH_TOKEN" --grpc-web
+
+      - name: Sync dev and prod apps
+        run: |
+          argocd app sync mern-chatapp-dev --grpc-web
+          argocd app wait mern-chatapp-dev --health --sync --timeout 600 --grpc-web
+          argocd app sync mern-chatapp-prod --grpc-web
+          argocd app wait mern-chatapp-prod --health --sync --timeout 600 --grpc-web

@@ -1,0 +1,10 @@
+import express from 'express';
+import { getMessages, searchMessages, sendMessage } from '../controllers/message.controller.js';
+import protectRoute from '../middleware/protectRoute.js';
+import { messageRateLimiter } from '../middleware/rateLimiters.js';
+import upload from '../middleware/upload.js';
+const router = express.Router();
+router.get('/search', protectRoute, searchMessages);
+router.get('/:id', protectRoute, getMessages);
+router.post('/send/:id', protectRoute, messageRateLimiter, upload.single('file'), sendMessage);
+export default router;
