@@ -11,15 +11,20 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install argocd CLI
         run: |
-          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x argocd
-          sudo mv argocd /usr/local/bin/argocd
+          set -euo pipefail
+          tmp_dir="$(mktemp -d)"
+          curl -fL --retry 3 --retry-delay 2 -o "$tmp_dir/argocd" https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x "$tmp_dir/argocd"
+          sudo install -m 0755 "$tmp_dir/argocd" /usr/local/bin/argocd
 
       - name: Login to ArgoCD
         env:
