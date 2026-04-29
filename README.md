@@ -54,6 +54,22 @@ You can try out the current Realtime Chat Application [here](https://mern-chatap
 - ArgoCD manifests are available under `argocd/` (`project`, `app-dev`, `app-prod`).
 - Vault bootstrap manifests and runbook are under `k8s/vault/`.
 
+## Continuous Deployment
+
+This project uses **ArgoCD** for GitOps-based deployments to k3s:
+
+- **CD Pipeline**: `.github/workflows/cd.yml` syncs applications on push to `main`
+- **Service Account**: GitHub Actions uses a scoped `github-actions` service account with sync permissions
+- **Applications**: `mern-chatapp-dev` and `mern-chatapp-prod` defined in `k8s/argocd-apps.yaml`
+- **Ingress**: ArgoCD exposed via Traefik on `argocd.192.168.0.116.nip.io`
+
+**⚠️ Networking Note**: Cloud runners cannot reach local k3s clusters. See [DEPLOYMENT.md](./DEPLOYMENT.md) for networking solutions:
+- Self-hosted runner (recommended)
+- ngrok tunnel (quick demo)
+- Local-only workflow
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete setup, troubleshooting, and architecture details.
+
 ## Portfolio Checklist
 
 - [ ] Architecture diagram exported from Excalidraw

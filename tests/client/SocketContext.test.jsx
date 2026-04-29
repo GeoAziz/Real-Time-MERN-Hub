@@ -1,7 +1,8 @@
 /** @jest-environment jsdom */
 import { render, screen, waitFor } from '@testing-library/react';
 import { AuthContext } from '../../client/src/context/AuthContext.jsx';
-import { SocketContextProvider, useSocketContext } from '../../client/src/context/SocketContext.jsx';
+import { useSocketContext } from '../../client/src/context/SocketContext.js';
+import { SocketContextProvider } from '../../client/src/context/SocketContextProvider.jsx';
 
 const mockSocket = { on: jest.fn(), close: jest.fn() };
 

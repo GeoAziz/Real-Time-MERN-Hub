@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MessageInput from '../../client/src/components/messages/MessageInput.jsx';
-import { SocketContext } from '../../client/src/context/SocketContext.jsx';
+import { SocketContext } from '../../client/src/context/SocketContext.js';
 import useConversation from '../../client/src/zustand/useConversation.js';
 
 const mockSendMessage = jest.fn();

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BsSend, BsPaperclip } from 'react-icons/bs';
 import useSendMessage from '../../hooks/useSendMessage';
 import { useSocketContext } from '../../context/SocketContext';
@@ -13,11 +13,11 @@ const MessageInput = () => {
   const typingTimerRef = useRef(null);
   const inactivityTimerRef = useRef(null);
 
-  const stopTyping = () => {
+  const stopTyping = useCallback(() => {
     if (socket && selectedConversation?._id) {
       socket.emit('typing_stop', { conversationId: selectedConversation._id });
     }
-  };
+  }, [socket, selectedConversation?._id]);
 
   const handleTyping = () => {
     if (!socket || !selectedConversation?._id) return;
@@ -47,7 +47,7 @@ const MessageInput = () => {
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
     };
-  }, [socket, selectedConversation?._id]);
+  }, [stopTyping]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

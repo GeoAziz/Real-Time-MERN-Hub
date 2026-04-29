@@ -4,7 +4,7 @@ import MessageInput from './MessageInput.jsx';
 import Messages from './Messages.jsx';
 import { TiMessages } from 'react-icons/ti';
 import { useAuthContext } from '../../context/AuthContext.jsx';
-import { useSocketContext } from '../../context/SocketContext.jsx';
+import { useSocketContext } from '../../context/SocketContext';
 const MessageContainer = () => {
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { socket } = useSocketContext();
