@@ -6,10 +6,14 @@ import { SocketContextProvider } from '../../client/src/context/SocketContextPro
 
 const mockSocket = { on: jest.fn(), close: jest.fn() };
 
-jest.mock('socket.io-client', () => ({
-  __esModule: true,
-  default: jest.fn(() => mockSocket),
-}));
+jest.mock(
+  'socket.io-client',
+  () => ({
+    __esModule: true,
+    default: jest.fn(() => mockSocket),
+  }),
+  { virtual: true }
+);
 
 const Status = () => {
   const { socket } = useSocketContext();

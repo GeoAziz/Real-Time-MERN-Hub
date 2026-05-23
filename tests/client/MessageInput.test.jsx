@@ -1,12 +1,20 @@
 /** @jest-environment jsdom */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import MessageInput from '../../client/src/components/messages/MessageInput.jsx';
-import { SocketContext } from '../../client/src/context/SocketContext.js';
-import useConversation from '../../client/src/zustand/useConversation.js';
+import { act } from 'react';
 
 const mockSendMessage = jest.fn();
 const mockSocket = { emit: jest.fn(), on: jest.fn(), off: jest.fn() };
+
+jest.mock(
+  'react-icons/bs',
+  () => ({
+    __esModule: true,
+    BsSend: () => <span />,
+    BsPaperclip: () => <span />,
+  }),
+  { virtual: true }
+);
 
 jest.mock('../../client/src/hooks/useSendMessage.js', () => ({
   __esModule: true,
@@ -17,6 +25,10 @@ jest.mock('../../client/src/zustand/useConversation.js', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
+
+import MessageInput from '../../client/src/components/messages/MessageInput.jsx';
+import { SocketContext } from '../../client/src/context/SocketContext.js';
+import useConversation from '../../client/src/zustand/useConversation.js';
 
 describe('MessageInput', () => {
   beforeEach(() => {
@@ -32,8 +44,10 @@ describe('MessageInput', () => {
       </SocketContext.Provider>
     );
 
-    await user.type(screen.getByPlaceholderText(/send a message/i), 'hello');
-    await user.click(screen.getByRole('button'));
+    await act(async () => {
+      await user.type(screen.getByPlaceholderText(/send a message/i), 'hello');
+      await user.click(screen.getByRole('button'));
+    });
 
     expect(mockSendMessage).toHaveBeenCalledWith({ message: 'hello', file: null });
   });

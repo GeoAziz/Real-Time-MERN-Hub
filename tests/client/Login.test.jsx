@@ -1,9 +1,25 @@
 /** @jest-environment jsdom */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react';
+import { AuthContext } from '../../client/src/context/AuthContext.jsx';
+
+jest.mock(
+  'react-router-dom',
+  () => ({
+    __esModule: true,
+    MemoryRouter: ({ children }) => children,
+    Link: ({ children, to, ...props }) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
+  }),
+  { virtual: true }
+);
+
 import Login from '../../client/src/pages/login/Login.jsx';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthContext } from '../../client/src/context/AuthContext.jsx';
 
 const mockLogin = jest.fn();
 
@@ -27,9 +43,11 @@ describe('Login page', () => {
       </MemoryRouter>
     );
 
-    await user.type(screen.getByPlaceholderText(/enter username/i), 'alice');
-    await user.type(screen.getByPlaceholderText(/enter password/i), 'Password123');
-    await user.click(screen.getByRole('button', { name: /login/i }));
+    await act(async () => {
+      await user.type(screen.getByPlaceholderText(/enter username/i), 'alice');
+      await user.type(screen.getByPlaceholderText(/enter password/i), 'Password123');
+      await user.click(screen.getByRole('button', { name: /login/i }));
+    });
 
     expect(mockLogin).toHaveBeenCalledWith('alice', 'Password123');
   });
