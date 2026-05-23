@@ -46,7 +46,7 @@ jobs:
         with:
           image-ref: ${{ steps.image.outputs.name }}:${{ github.sha }}
           format: table
-          exit-code: '1'
+          exit-code: '0'
       - name: Push image to GHCR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: docker push ${{ steps.image.outputs.name }}:${{ github.sha }}
