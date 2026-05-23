@@ -1,7 +1,6 @@
 /** @jest-environment jsdom */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react';
 import { AuthContext } from '../../client/src/context/AuthContext.jsx';
 
 jest.mock(
@@ -43,11 +42,9 @@ describe('Login page', () => {
       </MemoryRouter>
     );
 
-    await act(async () => {
-      await user.type(screen.getByPlaceholderText(/enter username/i), 'alice');
-      await user.type(screen.getByPlaceholderText(/enter password/i), 'Password123');
-      await user.click(screen.getByRole('button', { name: /login/i }));
-    });
+    await user.type(screen.getByPlaceholderText(/enter username/i), 'alice');
+    await user.type(screen.getByPlaceholderText(/enter password/i), 'Password123');
+    await user.click(screen.getByRole('button', { name: /login/i }));
 
     expect(mockLogin).toHaveBeenCalledWith('alice', 'Password123');
   });

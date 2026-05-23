@@ -1,7 +1,6 @@
 /** @jest-environment jsdom */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react';
 
 const mockSendMessage = jest.fn();
 const mockSocket = { emit: jest.fn(), on: jest.fn(), off: jest.fn() };
@@ -44,10 +43,8 @@ describe('MessageInput', () => {
       </SocketContext.Provider>
     );
 
-    await act(async () => {
-      await user.type(screen.getByPlaceholderText(/send a message/i), 'hello');
-      await user.click(screen.getByRole('button'));
-    });
+    await user.type(screen.getByPlaceholderText(/send a message/i), 'hello');
+    await user.click(screen.getByRole('button'));
 
     expect(mockSendMessage).toHaveBeenCalledWith({ message: 'hello', file: null });
   });
